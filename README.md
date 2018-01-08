@@ -1,4 +1,6 @@
 # weather-catcher
 Arduino ambient condition monitoring station
 
-This is my first Git about a arduino monitoring station
+FEATURES:
+* IR remote LCD Display control
+* Saves humidity and temperature data every 15 min
