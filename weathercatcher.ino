@@ -1,8 +1,10 @@
+#include <EEPROM.h>
 #include <IRremote.h>
 #include <LiquidCrystal.h>
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
+
 
 #define DHTPIN 7
 #define DHTTYPE DHT11
@@ -17,6 +19,8 @@ IRrecv irrecv(RECV_PIN);
 decode_results results;
 
 //int relayPin = 6; // Pin for Relay Control
+
+int j = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -57,10 +61,10 @@ void loop() {
   long i = 0;
   if (irrecv.decode(&results)) {   //irrecv.decode(&results) is 1 for pressed button, 0 for no button pressed
     i = long(results.value);
-    if (i == 16761405) {
+    if (i == 16761405) { //if "Play" is pressed the LCD is turned on
       lcd.display();
     }
-    if (i != 16761405) {
+    if (i != 16761405) { //any other key turns the LCD off again
       lcd.noDisplay();
     }
     //Serial.println("i:");
@@ -71,8 +75,20 @@ void loop() {
   Serial.print(humidity);
   Serial.print("\t\t");
   Serial.println(temperature);
+  if (j == 900000) { // Every roughly 15 min the values are saved in EEPROM
+    save(humidity, temperature);
+    j = 0;
+  }
+  j++;  
+}
 
-  // alle 10 min Wert in EEPROM speichern
-
-
+void save(float humidity, float temperature) { //Saves the value of humidity and temperature in EEPROM
+  int i = 0;
+  byte hum = byte(humidity);
+  byte temp = byte(temperature);
+  EEPROM.update(i, hum);
+  i++;
+  EEPROM.update(i,temp);
+  i++;
+  return;
 }
